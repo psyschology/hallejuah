@@ -7,6 +7,9 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+app.use(express.static('public'));
+
+
 let tickets = [];
 
 function generateTicket(number) {
