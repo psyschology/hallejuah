@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housie Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <button onclick="setTickets()">Set Tickets</button>
+    <button onclick="bookTickets()">Book Tickets</button>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:3000');
+
+        function setTickets() {
+            const count = prompt('Enter number of tickets to set:');
+            socket.send(JSON.stringify({ type: 'set', count }));
+        }
+
+        function bookTickets() {
+            const count = prompt('Enter number of tickets to book:');
+            const name = prompt('Enter the name:');
+            socket.send(JSON.stringify({ type: 'book', count, name }));
+        }
+    </script>
+</body>
+</html>

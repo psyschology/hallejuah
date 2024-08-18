@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housie User</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .ticket { border: 1px solid #333; padding: 10px; margin: 10px 0; }
+        .grid { display: grid; grid-template-columns: repeat(9, 1fr); margin-top: 10px; }
+        .grid div { border: 1px solid #ccc; padding: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Search for Tickets</h1>
+    <input type="text" id="search" placeholder="Enter ticket number" onkeyup="searchTicket()">
+    <div id="tickets"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:3000');
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            renderTickets(data.tickets);
+        };
+
+        function renderTickets(tickets) {
+            const ticketsContainer = document.getElementById('tickets');
+            ticketsContainer.innerHTML = '';
+            tickets.forEach(ticket => {
+                const ticketDiv = document.createElement('div');
+                ticketDiv.className = 'ticket';
+                ticketDiv.innerHTML = `
+                    <strong>Ticket #${ticket.number}</strong><br>
+                    <a href="https://wa.me/9999999">${ticket.bookedBy ? ticket.bookedBy : 'Book Now'}</a>
+                    <div class="grid">
+                        ${ticket.grid.map(row => row.map(num => `<div>${num || ''}</div>`).join('')).join('')}
+                    </div>
+                `;
+                ticketsContainer.appendChild(ticketDiv);
+            });
+        }
+
+        function searchTicket() {
+            const query = document.getElementById('search').value.toLowerCase();
+            socket.send(JSON.stringify({ type: 'search', query }));
+        }
+    </script>
+</body>
+</html>
